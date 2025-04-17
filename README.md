@@ -88,7 +88,7 @@ print(recs.head())
 
 ## 🖼️  Screenshots
 
-> _Add a couple screenshots or a GIF of the app here._
+![Sample Output](support/app-screenshot.png)
 
 ---
 
