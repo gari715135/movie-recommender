@@ -11,7 +11,6 @@ from .network import get_html
 
 __all__ = ["scrape_films", "list_friends"]
 
-# ───────────────────── helpers ──────────────────────
 def _transform_rating(raw: str) -> float:
     raw = (raw or "").strip()
     full, half = raw.count("★"), "½" in raw
@@ -29,7 +28,6 @@ def _parse_film_page(html: str, store: Dict[str, List]):
         store["liked"].append(li.select_one("span.like") is not None)
         store["link"].append(link)
 
-# ───────────────────── scrape_films ─────────────────
 def scrape_films(username: str) -> pd.DataFrame:
     """Return every film logged by *username*."""
     url0 = f"{DOMAIN}/{username}/films/"

@@ -19,13 +19,13 @@ def recommend_movies(
     """Similarity-weighted movie recommendations."""
     me_r = df_user.set_index("id")["rating"].replace(-1, pd.NA)
 
-    # 1) similarity per friend
+    # similarity per friend
     sim = {
         friend: pearson(me_r, info["df_b"].set_index("id")["rating"].replace(-1, pd.NA))
         for friend, info in friends_data.items()
     }
 
-    # 2) unseen films
+    # unseen films
     seen = set(me_r.index)
     unseen = pd.concat(
         [info["df_b"][~info["df_b"]["id"].isin(seen)].assign(sim=sim[friend])
@@ -34,7 +34,7 @@ def recommend_movies(
     if unseen.empty:
         return unseen
 
-    # 3) aggregate
+    # aggregate
     agg = (
         unseen.groupby(["id", "title", "link"])
         .apply(
@@ -50,7 +50,7 @@ def recommend_movies(
         .reset_index()
     )
 
-    # 4) scoring
+    # scoring
     norm = lambda s: (s - s.min()) / (s.max() - s.min()) if s.nunique() > 1 else s / s.max()
     agg["score"] = (
         rating_w * agg["pred_rating"] / 5.0
