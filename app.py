@@ -59,7 +59,7 @@ nice = recs.rename(
         "num_friends": "#Friends",
     }
 )[["Title", "Pred ★", "Composite Score", "#Friends"]]
-nice = nice.loc[nice['#Friends']>=1]
+nice = nice.loc[nice["#Friends"] >= 1]
 nice["#Friends"] = nice["#Friends"].astype(int)
 
 st.subheader("🍿  Recommended Movies")
@@ -83,7 +83,7 @@ with st.expander("What is the 'Composite Score'?"):
         | *Predicted rating* | 5x | Your expected ★-rating based on taste similarity. |
         | *Like ratio* | 1x | Weighted proportion of friends who marked the film as *liked*. |
         | *Popularity among friends* | 1x | How many friends have logged the film. |
-        | *(Optional) extra weights* | - | You can tune these in `lbxd/recommend.py`. |
+        | *(Optional) extra weights* | - | Tune these in `lbxd/recommend.py`. |
         
         The higher the score, the stronger the recommendation.
         """

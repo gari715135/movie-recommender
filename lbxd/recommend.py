@@ -7,6 +7,7 @@ from .config import LOGGER
 
 __all__ = ["recommend_movies"]
 
+
 def recommend_movies(
     friends_data: Dict[str, Dict],
     df_user: pd.DataFrame,
@@ -28,8 +29,7 @@ def recommend_movies(
     # unseen films
     seen = set(me_r.index)
     unseen = pd.concat(
-        [info["df_b"][~info["df_b"]["id"].isin(seen)].assign(sim=sim[friend])
-         for friend, info in friends_data.items()]
+        [info["df_b"][~info["df_b"]["id"].isin(seen)].assign(sim=sim[friend]) for friend, info in friends_data.items()]
     )
     if unseen.empty:
         return unseen
@@ -40,8 +40,9 @@ def recommend_movies(
         .apply(
             lambda g: pd.Series(
                 {
-                    "pred_rating": (g["rating"] * g["sim"]).sum() / g["sim"].sum()
-                    if g["sim"].sum() else g["rating"].mean(),
+                    "pred_rating": (
+                        (g["rating"] * g["sim"]).sum() / g["sim"].sum() if g["sim"].sum() else g["rating"].mean()
+                    ),
                     "like_sum": (g["liked"] * g["sim"]).sum(),
                     "num_friends": len(g),
                 }
@@ -53,9 +54,7 @@ def recommend_movies(
     # scoring
     norm = lambda s: (s - s.min()) / (s.max() - s.min()) if s.nunique() > 1 else s / s.max()
     agg["score"] = (
-        rating_w * agg["pred_rating"] / 5.0
-        + like_w * norm(agg["like_sum"])
-        + pop_w * norm(agg["num_friends"])
+        rating_w * agg["pred_rating"] / 5.0 + like_w * norm(agg["like_sum"]) + pop_w * norm(agg["num_friends"])
     )
 
     out = agg.sort_values("score", ascending=False)

@@ -5,17 +5,19 @@ from typing import Dict, List
 import pandas as pd
 from bs4 import BeautifulSoup
 
-from .similarity import pearson 
+from .similarity import pearson
 from .config import LOGGER, DOMAIN, MAX_WORKERS
 from .network import get_html
 
 __all__ = ["scrape_films", "list_friends"]
+
 
 def _transform_rating(raw: str) -> float:
     raw = (raw or "").strip()
     full, half = raw.count("★"), "½" in raw
     rating = full + (0.5 if half else 0.0)
     return rating if 0.0 <= rating <= 5.0 else -1.0
+
 
 def _parse_film_page(html: str, store: Dict[str, List]):
     soup = BeautifulSoup(html, "lxml")
@@ -27,6 +29,7 @@ def _parse_film_page(html: str, store: Dict[str, List]):
         store["rating"].append(_transform_rating(rating_raw.get_text(strip=True) if rating_raw else ""))
         store["liked"].append(li.select_one("span.like") is not None)
         store["link"].append(link)
+
 
 def scrape_films(username: str) -> pd.DataFrame:
     """Return every film logged by *username*."""
@@ -49,6 +52,7 @@ def scrape_films(username: str) -> pd.DataFrame:
 
     return pd.DataFrame(store)
 
+
 def scrape_friends(
     username: str,
     friends: list[str],
@@ -70,9 +74,7 @@ def scrape_friends(
 
     def _fetch(friend: str):
         df_b = scrape_films(friend)
-        idx = pearson(
-            df_me.set_index("id")["rating"], df_b.set_index("id")["rating"]
-        )
+        idx = pearson(df_me.set_index("id")["rating"], df_b.set_index("id")["rating"])
         return friend, df_b, idx
 
     friends_data: dict = {}
@@ -80,10 +82,9 @@ def scrape_friends(
         for friend, df_b, idx in pool.map(_fetch, friends):
             friends_data[friend] = {"df_b": df_b, "index": idx}
 
-    df_friends = pd.DataFrame(
-        {"username": k, "total_index": v["index"]} for k, v in friends_data.items()
-    )
+    df_friends = pd.DataFrame({"username": k, "total_index": v["index"]} for k, v in friends_data.items())
     return df_friends, friends_data, df_me
+
 
 def _friends_page(username: str, path: str) -> List[str]:
     res, url = [], f"{DOMAIN}/{username}/{path}/"
@@ -95,6 +96,7 @@ def _friends_page(username: str, path: str) -> List[str]:
             break
         url = DOMAIN + nxt["href"]
     return res
+
 
 def list_friends(username: str, mode: str = "mutual") -> List[str]:
     """Return `<following | followers | mutual>` friends."""

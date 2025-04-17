@@ -11,6 +11,7 @@ from .config import LOGGER, REQUEST_DELAY, POOL_SIZE
 _MAX_RETRIES: Final[int] = 3
 _BACKOFF_FACTOR: Final[float] = 0.5
 
+
 def _build_session() -> requests.Session:
     retries = Retry(
         total=_MAX_RETRIES,
@@ -28,7 +29,9 @@ def _build_session() -> requests.Session:
     sess.mount("https://", adapter)
     return sess
 
+
 _SESSION: Final[requests.Session] = _build_session()
+
 
 def get_html(url: str) -> str:
     """Fetch *url* and return HTML text."""

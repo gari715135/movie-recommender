@@ -118,5 +118,3 @@ PRs & issues welcome!  Take a look at the
 
 ---
 
-> **Made with ❤️ & 🍿by@<your-handle>**
-

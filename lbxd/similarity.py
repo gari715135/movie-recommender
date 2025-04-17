@@ -7,6 +7,7 @@ from .config import LOGGER
 
 __all__ = ["pearson", "friend_similarity"]
 
+
 def pearson(x: pd.Series, y: pd.Series) -> float:
     """Non-negative Pearson r on common IDs (returns 0 when undefined)."""
     x, y = x.align(y, join="inner")
@@ -19,6 +20,7 @@ def pearson(x: pd.Series, y: pd.Series) -> float:
     with np.errstate(divide="ignore", invalid="ignore"):
         r = np.corrcoef(x, y)[0, 1]
     return max(0.0, float(r)) if not np.isnan(r) else 0.0
+
 
 def friend_similarity(df_me: pd.DataFrame, friends_data: Dict[str, Dict]) -> pd.DataFrame:
     """Return DataFrame <username, similarity> sorted descending."""
